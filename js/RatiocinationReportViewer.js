@@ -5,7 +5,7 @@ var HIGHLIGHT_STYLES = {
   sentence: {
     state: 0,
     styleGenerator: function(interval, text, state) {
-      var COLORS = ["#f00020", "#1dad01", "#3a6ca8", "#d0396b"];
+      var COLORS = ["#f00020", "#1dad01", "#3a6ca8", "#8a2be2"];
       var css = "color: " + COLORS[state % COLORS.length] + ";"
       this.state += 1; 
       return css;
@@ -33,11 +33,43 @@ var HIGHLIGHT_STYLES = {
 
 var STAT_RENDERERS = {
   sentenceLengthDistribution: function(statsJson) {
-    var finalHTML = "";
+    var ctx = document.getElementById("myChart").getContext('2d');
+    var sentenceLengths = Object.keys(statsJson).map(function(sentenceLength) {
+      return sentenceLength + "-word";
+    })
+    var sentenceLengthFrequencies = Object.keys(statsJson).map(function(key) {
+      return statsJson[key]; //just doing this as a workaround because some browsers don't support Object.values()
+    })
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: sentenceLengths,//["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+            datasets: [{
+                label: 'Sentence Length Distribution',
+                data: sentenceLengthFrequencies,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero:true
+                    },
+                    scaleLabel: {
+                      display: true,
+                      labelString: 'frequency'
+                    }
+                }]
+            }
+        }
+    });
+    return "";
+    /*var finalHTML = "";
     Object.keys(statsJson).forEach(function(key) {
       finalHTML += "<div>" + key + "-word sentences: " + JSON.stringify(statsJson[key]) + "</div>";
     });
-    return finalHTML;
+    return finalHTML;*/
   }
 }
 
